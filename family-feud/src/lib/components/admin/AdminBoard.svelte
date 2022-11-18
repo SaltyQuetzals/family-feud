@@ -1,15 +1,19 @@
 <script lang="ts">
 	import type { Question } from '$lib/types';
-	import AnswerSlot from './AnswerSlot.svelte';
-	import BlankSlot from './BlankSlot.svelte';
+	import { createEventDispatcher } from 'svelte';
+	import BlankSlot from '../BlankSlot.svelte';
+	import AdminSlot from './AdminSlot.svelte';
+	const dispatch = createEventDispatcher();
 	export let question: Question | null;
 	export let team1Score: number;
 	export let team2Score: number;
 	export let boardScore: number;
 	export let revealed: Set<number>;
+
+	const toggleRevealed = (answerRank: number) => dispatch('answerToggled', {answerRank});
 </script>
 
-{#if question !== null}
+{#if question}
 	<div class="container">
 		<div class="score" id="board-score">{boardScore}</div>
 		<div class="main-row">
@@ -17,7 +21,11 @@
 			<div class="answers">
 				{#each question.answers as answer, i}
 					{#if answer !== null}
-						<AnswerSlot revealed={revealed.has(i + 1)} {answer} rank={i + 1} />
+						<AdminSlot
+							revealed={revealed.has(i + 1)}
+							{answer}
+							on:change={() => toggleRevealed(i+1)}
+						/>
 					{:else}
 						<BlankSlot />
 					{/if}

@@ -1,20 +1,15 @@
 <script lang="ts">
-	import type { Answer } from "$lib/types";
-
-
-	export let revealed = false;
-	export let rank: number;
+	import type { Answer } from '$lib/types';
 	export let answer: Answer;
+	export let revealed: boolean;
 </script>
 
 <div class="flip-card">
-	<div class="inner"  class:revealed>
-		<div class="front">
-			<span>{rank}</span>
-		</div>
+	<div class="inner">
 		<div class="back">
-			<span class="text">{answer.text.toUpperCase()}</span>
-			<span class="survey-count">{answer.surveyCount}</span>
+				<input type="checkbox" on:change id="reveal-checkbox" name="Revealed"/>
+				<span class="text">{answer.text.toUpperCase()}</span>
+				<span class="survey-count">{answer.surveyCount}</span>
 		</div>
 	</div>
 </div>
@@ -36,7 +31,6 @@
 		transform-style: preserve-3d;
 	}
 
-	.front,
 	.back {
 		position: absolute;
 		width: 100%;
@@ -50,31 +44,12 @@
 		font-size: x-large;
 		color: white;
 	}
-
-	.front span {
-		font-weight: 800;
-
-		background: #1a2659;
-		border: 2px solid #7491cb;
-		border-radius: 50%;
-		padding: 0.25em 1em 0.25em 1em;
-	}
-
-	.revealed {
-		transform: rotateX(180deg);
-	}
-
-	.front {
-		background: linear-gradient(180deg, #668fdc 0%, rgba(48, 85, 173, 0.53) 100%);
-	}
-
 	.back {
 		background: linear-gradient(180deg, #668fdc 0%, rgba(48, 85, 173, 0.53) 100%);
-		transform: rotateX(180deg);
 		display: flex;
 		justify-content: space-between;
 		justify-items: center;
-		background:rgba(48, 85, 173, 0.53);
+		background: rgba(48, 85, 173, 0.53);
 	}
 
 	.back .text {
@@ -86,4 +61,9 @@
 		max-width: 10%;
 		padding: 8px;
 	}
+
+    input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+    }
 </style>
