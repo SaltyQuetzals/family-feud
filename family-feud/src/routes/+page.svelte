@@ -1,26 +1,23 @@
 <script lang="ts">
-	import Answer from '$lib/components/Answer.svelte';
+	import GameBoard from '$lib/components/GameBoard.svelte';
 </script>
 
-<div class="columns">
-	<div>
-		<Answer rank={1} answer={"Flippers"} surveyCount={0} />
-		<Answer rank={2} />
-		<Answer rank={3} />
-		<Answer rank={4} />
-		<Answer rank={5} />
-	</div>
-	<div>
-		<Answer rank={6} />
-		<Answer rank={7} />
-		<Answer rank={8} />
-		<Answer rank={9} />
-		<Answer rank={10} />
-	</div>
+<div class="backdrop">
+	<GameBoard />
 </div>
 
 <style>
-	.columns {
-		column-count: 2;
+	.backdrop {
+		max-width: 80%;
+		margin: auto;
+		margin-top: 16em;
+		border-radius: 50%;
+		border: 5px solid #003c7b;
+		padding-top: 2.5em;
+		padding-bottom: 5em;
+		background: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/40041/bgFF.svg') #0c4779;
+		/*background: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/40041/bgFF.svg') #3a84c3;*/
+		background-repeat: repeat;
+		background-position: center center;
 	}
 </style>
