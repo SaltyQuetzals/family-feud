@@ -10,7 +10,7 @@
 	export let boardScore: number;
 	export let revealed: Set<number>;
 
-	const toggleRevealed = (answerRank: number) => dispatch('answerToggled', {answerRank});
+	const toggleRevealed = (answerRank: number) => dispatch('answerToggled', { answerRank });
 </script>
 
 {#if question}
@@ -24,7 +24,7 @@
 						<AdminSlot
 							revealed={revealed.has(i + 1)}
 							{answer}
-							on:change={() => toggleRevealed(i+1)}
+							on:change={() => toggleRevealed(i + 1)}
 						/>
 					{:else}
 						<BlankSlot />

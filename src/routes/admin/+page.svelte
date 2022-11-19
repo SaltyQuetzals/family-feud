@@ -39,7 +39,7 @@
 				postQuestion(question);
 			});
 		}
-	}
+	};
 
 	const postQuestion = (q: Question) => {
 		const message: NewQuestionMessage = {

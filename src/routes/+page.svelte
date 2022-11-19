@@ -54,16 +54,14 @@
 	});
 </script>
 
-<div class="container">
-	<div class="backdrop">
-		<GameBoard
-			{question}
-			{revealed}
-			team1Score={Math.round($team1Score)}
-			team2Score={Math.round($team2Score)}
-			boardScore={Math.round($boardScore)}
-		/>
-	</div>
+<div class="backdrop">
+	<GameBoard
+		{question}
+		{revealed}
+		team1Score={Math.round($team1Score)}
+		team2Score={Math.round($team2Score)}
+		boardScore={Math.round($boardScore)}
+	/>
 </div>
 
 <style>
@@ -78,11 +76,5 @@
 		/*background: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/40041/bgFF.svg') #3a84c3;*/
 		background-repeat: repeat;
 		background-position: center center;
-	}
-
-	.container {
-		transform: translateY(20%);
-		align-items: center;
-		justify-items: center;
 	}
 </style>
