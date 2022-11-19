@@ -1,17 +1,18 @@
 <script lang="ts">
 	import type { Answer } from '$lib/types';
 	export let answer: Answer;
-	export let revealed: boolean;
 </script>
 
 <div class="flip-card">
-	<div class="inner">
-		<div class="back">
-				<input type="checkbox" on:change id="reveal-checkbox" name="Revealed"/>
+	{#key answer}
+		<div class="inner">
+			<div class="back">
+				<input type="checkbox" on:change id="reveal-checkbox" name="Revealed" />
 				<span class="text">{answer.text.toUpperCase()}</span>
 				<span class="survey-count">{answer.surveyCount}</span>
+			</div>
 		</div>
-	</div>
+	{/key}
 </div>
 
 <style>
@@ -62,8 +63,8 @@
 		padding: 8px;
 	}
 
-    input[type="checkbox"] {
-        width: 24px;
-        height: 24px;
-    }
+	input[type='checkbox'] {
+		width: 24px;
+		height: 24px;
+	}
 </style>

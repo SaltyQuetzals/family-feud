@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { CHANNEL_NAME } from '$lib/broadcast-channel/channel';
+	import { tweened } from 'svelte/motion';
+	import { linear } from 'svelte/easing';
+
 	import {
 		MessageType,
 		type HideAnswerMessage,
 		type NewQuestionMessage,
+		type RefreshPointsMessage,
 		type RevealAnswerMessage
 	} from '$lib/broadcast-channel/messages';
 	import AdminBoard from '$lib/components/admin/AdminBoard.svelte';
@@ -13,9 +17,29 @@
 	let revealed: Set<number> = new Set();
 	let question: Question | null = null;
 	let files: FileList | undefined = undefined;
-	let team1Score = 0;
-	let team2Score = 0;
-	let boardScore = 0;
+	const team1Score = tweened(0, {
+		duration: 250,
+		easing: linear
+	});
+	const team2Score = tweened(0, {
+		duration: 250,
+		easing: linear
+	});
+	const boardScore = tweened(0, {
+		duration: 250,
+		easing: linear
+	});
+
+	const updateQuestion = () => {
+		if (files && files[0]) {
+			files[0].text().then((text) => {
+				question = JSON.parse(text) as Question;
+				revealed = new Set();
+				boardScore.set(0);
+				postQuestion(question);
+			});
+		}
+	}
 
 	const postQuestion = (q: Question) => {
 		const message: NewQuestionMessage = {
@@ -25,28 +49,26 @@
 		broadcastChannel?.postMessage(message);
 	};
 
-	$: {
-		if (files && files[0]) {
-			files[0].text().then((text) => {
-				question = JSON.parse(text) as Question;
-				postQuestion(question);
-			});
-		}
-	}
-
 	let broadcastChannel: BroadcastChannel | null = null;
 
 	onMount(() => {
 		broadcastChannel = new BroadcastChannel(CHANNEL_NAME);
 	});
 
+	const postScoreUpdate = () => {
+		const message: RefreshPointsMessage = {
+			type: MessageType.REFRESH_POINTS,
+			boardPoints: $boardScore,
+			team1Points: $team1Score,
+			team2Points: $team2Score
+		};
+		broadcastChannel?.postMessage(message);
+	};
+
 	const toggleAnswer = (event: CustomEvent<{ answerRank: number }>) => {
 		const { answerRank } = event.detail;
-		if (revealed.has(answerRank)) {
-			hideAnswer(answerRank);
-		} else {
-			revealAnswer(answerRank);
-		}
+		const toggleFunction = revealed.has(answerRank) ? hideAnswer : revealAnswer;
+		toggleFunction(answerRank).then(postScoreUpdate);
 	};
 
 	const revealAnswer = (answerRank: number) => {
@@ -58,6 +80,8 @@
 			answerRank
 		};
 		broadcastChannel?.postMessage(message);
+		const currentBoardScore = $boardScore;
+		return boardScore.set(currentBoardScore + question!.answers[answerRank - 1]!.surveyCount);
 	};
 
 	const hideAnswer = (answerRank: number) => {
@@ -69,6 +93,21 @@
 			answerRank
 		};
 		broadcastChannel?.postMessage(message);
+
+		const currentBoardScore = $boardScore;
+		return boardScore.set(currentBoardScore - question!.answers[answerRank - 1]!.surveyCount);
+	};
+
+	const assignBoardPointsToTeam = (teamNumber: 1 | 2) => {
+		const currentBoardScore = $boardScore;
+		if (teamNumber === 1) {
+			const currentTeamScore = $team1Score;
+			team1Score.set(currentTeamScore + currentBoardScore);
+		} else {
+			const currentTeamScore = $team2Score;
+			team2Score.set(currentTeamScore + currentBoardScore);
+		}
+		boardScore.set(0).then(postScoreUpdate);
 	};
 </script>
 
@@ -76,18 +115,18 @@
 	<AdminBoard
 		{question}
 		{revealed}
-		{team1Score}
-		{team2Score}
-		{boardScore}
+		team1Score={Math.round($team1Score)}
+		team2Score={Math.round($team2Score)}
+		boardScore={Math.round($boardScore)}
 		on:answerToggled={toggleAnswer}
 	/>
 
 	<div class="buttons">
 		<div>
-			<button>Add Points to Team 1</button>
-			<button>Add Points to Team 2</button>
+			<button on:click={() => assignBoardPointsToTeam(1)}>Add Points to Team 1</button>
+			<button on:click={() => assignBoardPointsToTeam(2)}>Add Points to Team 2</button>
 		</div>
-		<input type="file" bind:files />
+		<input type="file" bind:files on:change={updateQuestion} />
 	</div>
 </div>
 

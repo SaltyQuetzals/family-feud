@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { Answer } from "$lib/types";
-
+	import type { Answer } from '$lib/types';
 
 	export let revealed = false;
 	export let rank: number;
@@ -8,15 +7,17 @@
 </script>
 
 <div class="flip-card">
-	<div class="inner"  class:revealed>
-		<div class="front">
-			<span>{rank}</span>
+	{#key answer}
+		<div class="inner" class:revealed>
+			<div class="front">
+				<span>{rank}</span>
+			</div>
+			<div class="back">
+				<span class="text">{answer.text.toUpperCase()}</span>
+				<span class="survey-count">{answer.surveyCount}</span>
+			</div>
 		</div>
-		<div class="back">
-			<span class="text">{answer.text.toUpperCase()}</span>
-			<span class="survey-count">{answer.surveyCount}</span>
-		</div>
-	</div>
+	{/key}
 </div>
 
 <style>
@@ -34,6 +35,7 @@
 		text-align: center;
 		transition: transform 0.6s;
 		transform-style: preserve-3d;
+		backface-visibility: hidden;
 	}
 
 	.front,
@@ -74,7 +76,7 @@
 		display: flex;
 		justify-content: space-between;
 		justify-items: center;
-		background:rgba(48, 85, 173, 0.53);
+		background: rgba(48, 85, 173, 0.53);
 	}
 
 	.back .text {
