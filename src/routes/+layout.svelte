@@ -3,7 +3,6 @@
 </div>
 
 <style>
-
 	.container {
 		transform: translateY(20%);
 		align-items: center;
