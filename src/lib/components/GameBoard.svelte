@@ -1,29 +1,38 @@
 <script lang="ts">
 	import type { Question } from '$lib/types';
+	import { createEventDispatcher } from 'svelte';
+	import type { Tweened } from 'svelte/motion';
 	import AnswerSlot from './AnswerSlot.svelte';
-	import BlankSlot from './BlankSlot.svelte';
+	const dispatch = createEventDispatcher();
 	export let question: Question | null;
-	export let team1Score: number;
-	export let team2Score: number;
-	export let boardScore: number;
+	export let team1Score: Tweened<number>;
+	export let team2Score: Tweened<number>;
+	export let boardScore: Tweened<number>;
+	export let admin = false;
 	export let revealed: Set<number>;
+
+	const adminToggledRevealState = (answerRank: number) => {
+		dispatch('admin-toggle', { answerRank });
+	};
 </script>
 
 {#if question !== null}
 	<div class="container">
-		<div class="score" id="board-score">{boardScore}</div>
+		<div class="score" id="board-score">{Math.round($boardScore)}</div>
 		<div class="main-row">
-			<span class="score" id="team1">{team1Score}</span>
+			<span class="score" id="team1">{Math.round($team1Score)}</span>
 			<div class="answers">
 				{#each question.answers as answer, i}
-					{#if answer !== null}
-						<AnswerSlot revealed={revealed.has(i + 1)} {answer} rank={i + 1} />
-					{:else}
-						<BlankSlot />
-					{/if}
+					<AnswerSlot
+						revealed={revealed.has(i + 1)}
+						{answer}
+						rank={i + 1}
+						{admin}
+						on:change={() => adminToggledRevealState(i + 1)}
+					/>
 				{/each}
 			</div>
-			<span class="score" id="team2">{team2Score}</span>
+			<span class="score" id="team2">{Math.round($team2Score)}</span>
 		</div>
 	</div>
 {/if}

@@ -2,22 +2,39 @@
 	import type { Answer } from '$lib/types';
 
 	export let revealed = false;
-	export let rank: number;
-	export let answer: Answer;
+	export let admin = false;
+	export let rank: number | null = null;
+	export let answer: Answer | null = null;
 </script>
 
 <div class="flip-card">
-	{#key answer}
-		<div class="inner" class:revealed>
-			<div class="front">
-				<span>{rank}</span>
-			</div>
-			<div class="back">
-				<span class="text">{answer.text.toUpperCase()}</span>
-				<span class="survey-count">{answer.surveyCount}</span>
-			</div>
+	{#if answer === null}
+		<div class="inner">
+			<div class="front" />
 		</div>
-	{/key}
+	{:else if admin}
+		{#key answer}
+			<div class="inner">
+				<div class="back" class:admin>
+					<input type="checkbox" on:change id="reveal-checkbox" name="Revealed" />
+					<span class="text">{answer.text.toUpperCase()}</span>
+					<span class="survey-count">{answer.surveyCount}</span>
+				</div>
+			</div>
+		{/key}
+	{:else}
+		{#key answer}
+			<div class="inner" class:revealed>
+				<div class="front">
+					<span>{rank}</span>
+				</div>
+				<div class="back">
+					<span class="text">{answer.text.toUpperCase()}</span>
+					<span class="survey-count">{answer.surveyCount}</span>
+				</div>
+			</div>
+		{/key}
+	{/if}
 </div>
 
 <style>
@@ -77,6 +94,10 @@
 		justify-content: space-between;
 		justify-items: center;
 		background: rgba(48, 85, 173, 0.53);
+	}
+
+	.admin {
+		transform: none;
 	}
 
 	.back .text {

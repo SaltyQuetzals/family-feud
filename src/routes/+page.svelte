@@ -58,9 +58,9 @@
 	<GameBoard
 		{question}
 		{revealed}
-		team1Score={Math.round($team1Score)}
-		team2Score={Math.round($team2Score)}
-		boardScore={Math.round($boardScore)}
+		team1Score={team1Score}
+		team2Score={team2Score}
+		boardScore={boardScore}
 	/>
 </div>
 

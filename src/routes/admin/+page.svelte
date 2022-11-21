@@ -10,9 +10,9 @@
 		type RefreshPointsMessage,
 		type RevealAnswerMessage
 	} from '$lib/broadcast-channel/messages';
-	import AdminBoard from '$lib/components/admin/AdminBoard.svelte';
 	import type { Question } from '$lib/types';
 	import { onMount } from 'svelte';
+	import GameBoard from '$lib/components/GameBoard.svelte';
 
 	let revealed: Set<number> = new Set();
 	let question: Question | null = null;
@@ -35,7 +35,7 @@
 			files[0].text().then((text) => {
 				question = JSON.parse(text) as Question;
 				revealed = new Set();
-				boardScore.set(0);
+				$boardScore = 0;
 				postQuestion(question);
 			});
 		}
@@ -68,7 +68,8 @@
 	const toggleAnswer = (event: CustomEvent<{ answerRank: number }>) => {
 		const { answerRank } = event.detail;
 		const toggleFunction = revealed.has(answerRank) ? hideAnswer : revealAnswer;
-		toggleFunction(answerRank).then(postScoreUpdate);
+		toggleFunction(answerRank);
+		postScoreUpdate();
 	};
 
 	const revealAnswer = (answerRank: number) => {
@@ -80,8 +81,7 @@
 			answerRank
 		};
 		broadcastChannel?.postMessage(message);
-		const currentBoardScore = $boardScore;
-		return boardScore.set(currentBoardScore + question!.answers[answerRank - 1]!.surveyCount);
+		$boardScore = $boardScore + question!.answers[answerRank - 1]!.surveyCount;
 	};
 
 	const hideAnswer = (answerRank: number) => {
@@ -93,33 +93,22 @@
 			answerRank
 		};
 		broadcastChannel?.postMessage(message);
-
-		const currentBoardScore = $boardScore;
-		return boardScore.set(currentBoardScore - question!.answers[answerRank - 1]!.surveyCount);
+		$boardScore = $boardScore - question!.answers[answerRank - 1]!.surveyCount;
 	};
 
 	const assignBoardPointsToTeam = (teamNumber: 1 | 2) => {
-		const currentBoardScore = $boardScore;
 		if (teamNumber === 1) {
-			const currentTeamScore = $team1Score;
-			team1Score.set(currentTeamScore + currentBoardScore);
+			$team1Score = $team1Score + $boardScore;
 		} else {
-			const currentTeamScore = $team2Score;
-			team2Score.set(currentTeamScore + currentBoardScore);
+			$team2Score = $team2Score + $boardScore;
 		}
-		boardScore.set(0).then(postScoreUpdate);
+		$boardScore = 0;
+		postScoreUpdate();
 	};
 </script>
 
 <div class="container">
-	<AdminBoard
-		{question}
-		{revealed}
-		team1Score={Math.round($team1Score)}
-		team2Score={Math.round($team2Score)}
-		boardScore={Math.round($boardScore)}
-		on:answerToggled={toggleAnswer}
-	/>
+	<GameBoard {question} {revealed} {team1Score} {team2Score} {boardScore} admin={true} on:admin-toggle={toggleAnswer} />
 
 	<div class="buttons">
 		<div>
