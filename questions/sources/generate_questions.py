@@ -3,7 +3,7 @@ import json
 import glob
 
 for filename in glob.iglob('*.csv'):
-    with open(filename, "r") as f:
+    with open(filename, "r", encoding='utf8') as f:
         reader = csv.reader(f)
         next(reader)
         for question, *answer_list in reader:
@@ -17,5 +17,6 @@ for filename in glob.iglob('*.csv'):
                 "text": question,
                 "answers": answers
             }
-            with open(f"../{question}.json", "w+") as output_f:
+            escaped = question.replace(' ', '_').replace(',', '_').replace('?', '_')
+            with open(f"../{escaped}.json", "w+") as output_f:
                 json.dump(formatted, output_f)
